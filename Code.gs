@@ -26,13 +26,12 @@ function doGet(e) {
 
 function doPost(e) {
   const api = e && e.parameter ? e.parameter.api : '';
-  if (api !== 'signup') {
-    return jsonResponse_({ok: false, message: 'Endpoint no válido.'});
-  }
   try {
     const raw = e && e.postData && e.postData.contents ? e.postData.contents : '{}';
     const payload = JSON.parse(raw);
-    return jsonResponse_(submitSignup(payload));
+    if (api === 'signup') return jsonResponse_(submitSignup(payload));
+    if (api === 'recommendation') return jsonResponse_(submitRecommendation(payload));
+    return jsonResponse_({ok: false, message: 'Endpoint no válido.'});
   } catch (err) {
     return jsonResponse_({ok: false, message: err && err.message ? err.message : String(err)});
   }
@@ -173,4 +172,24 @@ function submitSignup(payload) {
   if (last > 2) sheet.getRange(2, 1, last - 1, 5).sort({column: 1, ascending: true});
   sheet.getRange('A:A').setNumberFormat('dd/MM/yyyy HH:mm:ss');
   return {ok: true, message: '¡Inscripción registrada correctamente!'};
+}
+
+
+function submitRecommendation(payload) {
+  const song = String(payload && payload.song || '').trim();
+  const artist = String(payload && payload.artist || '').trim();
+  const singerName = String(payload && payload.singerName || '').trim();
+  const language = String(payload && payload.language || '').trim();
+  if (!song) throw new Error('Escribe el título de la canción que recomiendas.');
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheetName = 'Canciones Recomendadas';
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.appendRow(['Fecha y hora', 'Canción recomendada', 'Artista', 'Idioma elegido', 'Recomendado por']);
+    sheet.setFrozenRows(1);
+    sheet.getRange('A:A').setNumberFormat('dd/MM/yyyy HH:mm:ss');
+  }
+  sheet.appendRow([new Date(), song, artist, language, singerName]);
+  return {ok: true, message: '¡Gracias! Tu recomendación se ha enviado.'};
 }
