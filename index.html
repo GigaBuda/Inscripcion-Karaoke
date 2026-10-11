@@ -14,7 +14,7 @@ form{padding:23px 25px 27px}.field{margin:0 0 19px}label{display:flex;align-item
 <div class="field"><label for="artist"><span class="num">2</span> Cantante o autor <span class="req">*</span></label><select id="artist" required disabled><option>Primero elige un idioma</option></select><p class="hint">Escoge un artista del catálogo.</p></div>
 <div class="field"><label for="song"><span class="num">3</span> Canción <span class="req">*</span></label><select id="song" required disabled><option>Primero elige un cantante</option></select><p class="hint">Solo aparecerán las canciones de ese artista.</p></div>
 <div class="field"><label for="singerName"><span class="num">4</span> Nombre de quien va a cantar <span class="req">*</span></label><input id="singerName" maxlength="120" required autocomplete="name" placeholder="Escribe tu nombre"></div>
-<button id="submitButton" type="submit">🎶 CONFIRMAR INSCRIPCIÓN</button><div id="status" class="status" role="status" aria-live="polite"></div></form>
+<button id="submitButton" type="submit">🎶 CONFIRMAR INSCRIPCIÓN</button><div id="status" class="status" role="status" aria-live="polite"></div></form></section>
 <section class="card" style="margin-top:18px">
   <header class="hero" style="padding:20px 22px 12px;border-bottom:0">
     <h2 style="margin:0;font-size:22px">🎵 Canción recomendada</h2>
@@ -26,7 +26,7 @@ form{padding:23px 25px 27px}.field{margin:0 0 19px}label{display:flex;align-item
     <button id="recommendButton" type="button">💡 Enviar recomendación</button>
     <div id="recommendStatus" class="status" role="status" aria-live="polite"></div>
   </div>
-</section></section><div class="footer">Luces · Música · ¡A cantar!</div></main>
+</section><div class="footer">Luces · Música · ¡A cantar!</div></main>
 <script>
 const languageNames={english:'Inglés',infantil:'Infantil',espanol:'Español',italiano:'Italiano',catala:'Catalán',francais:'Francés',nederlands:'Neerlandés'};
 const languagePreference={en:'english',es:'espanol',ca:'catala',fr:'francais',it:'italiano',nl:'nederlands'};
