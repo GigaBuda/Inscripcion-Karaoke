@@ -67,14 +67,20 @@ function findLanguageSheet_(ss, key) {
 }
 
 function getCatalog() {
-  // Primero intenta leer el catálogo desde el endpoint remoto. Si no devuelve
-  // JSON con el formato esperado, conserva la lectura directa de la hoja actual.
+  // Usa el catálogo remoto cuando tenga datos. Si un idioma llega vacío
+  // (por ejemplo, Infantil), recupera ese idioma directamente de la hoja.
   const remoteCatalog = getRemoteCatalog_();
-  if (remoteCatalog) return remoteCatalog;
-
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const result = {};
+
   LANGUAGES.forEach(lang => {
+    const remote = remoteCatalog && remoteCatalog[lang.key];
+    if (remote && Array.isArray(remote.artists) && remote.artists.length > 0 &&
+        remote.songsByArtist && Object.keys(remote.songsByArtist).length > 0) {
+      result[lang.key] = remote;
+      return;
+    }
+
     const sheet = findLanguageSheet_(ss, lang.key);
     const lastRow = sheet.getLastRow();
     const entries = [];
