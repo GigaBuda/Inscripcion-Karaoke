@@ -1,4 +1,5 @@
-const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL;
+// Despliegue web de Apps Script INSCRIPCION. Se puede sobrescribir desde Vercel.
+const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyZukJNbvivF5ZTESvbrXQsRF9udZP_MD75Qvy4fODcsg5PDd3PgfJpK0buf0w-nRQ5rw/exec';
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (!APPS_SCRIPT_URL) return res.status(500).json({ ok: false, message: 'Falta configurar APPS_SCRIPT_URL en Vercel.' });
