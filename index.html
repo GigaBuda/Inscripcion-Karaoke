@@ -56,7 +56,13 @@ Object.assign(translations.fr,{'Elige un cantante':'Choisir un chanteur','Elige 
 Object.assign(translations.it,{'Elige un cantante':'Scegli un cantante','Elige primero un cantante':'Scegli prima un cantante'});
 Object.assign(translations.nl,{'Elige un cantante':'Kies een zanger','Elige primero un cantante':'Kies eerst een zanger'});
 
-function tr(text){return (translations[uiLang]&&translations[uiLang][text])||text}
+function tr(text){
+ const table=translations[uiLang]||{};
+ if(Object.prototype.hasOwnProperty.call(table,text))return table[text];
+ const normalized=String(text).trim();
+ const key=Object.keys(table).find(k=>k.trim()===normalized);
+ return key!==undefined?String(table[key]).trim():text;
+}
 function translateInterface(){
  document.documentElement.lang=uiLang;
  document.title=tr(document.title);
