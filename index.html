@@ -23,6 +23,7 @@ form{padding:23px 25px 27px}.field{margin:0 0 19px}label{display:flex;align-item
   <div style="padding:0 25px 24px">
     <div class="field"><label for="recommendedSong">Canción que recomiendas <span class="req">*</span></label><input id="recommendedSong" maxlength="180" placeholder="Título de la canción"></div>
     <div class="field"><label for="recommendedArtist">Artista (opcional)</label><input id="recommendedArtist" maxlength="180" placeholder="Nombre del artista"></div>
+    <div class="field"><label for="recommendedLanguage">Idioma de la canción <span class="req">*</span></label><select id="recommendedLanguage" required><option value="">Elige el idioma</option><option>Español</option><option>Inglés</option><option>Catalán</option><option>Francés</option><option>Italiano</option><option>Neerlandés</option><option>Otro</option></select></div>
     <button id="recommendButton" type="button">💡 Enviar recomendación</button>
     <div id="recommendStatus" class="status" role="status" aria-live="polite"></div>
   </div>
@@ -42,13 +43,15 @@ form.addEventListener('submit',async e=>{e.preventDefault();if(!form.reportValid
 async function sendRecommendation(){
  const title=document.querySelector('#recommendedSong').value.trim();
  const recArtist=document.querySelector('#recommendedArtist').value.trim();
+ const songLanguage=document.querySelector('#recommendedLanguage').value;
  const box=document.querySelector('#recommendStatus'), button=document.querySelector('#recommendButton');
  if(!title){box.textContent='Escribe el título de la canción que recomiendas.';box.className='status err';return}
+ if(!songLanguage){box.textContent='Elige el idioma de la canción.';box.className='status err';return}
  button.disabled=true;button.textContent='ENVIANDO…';
  try{
-  const result=await api('/api/recommendation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({song:title,artist:recArtist,singerName:document.querySelector('#singerName').value.trim(),language:lang.value||''})});
+  const result=await api('/api/recommendation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({song:title,artist:recArtist,singerName:document.querySelector('#singerName').value.trim(),language:lang.value||'',songLanguage})});
   box.textContent=result.message||'¡Gracias! Tu recomendación se ha enviado.';box.className='status ok';
-  document.querySelector('#recommendedSong').value='';document.querySelector('#recommendedArtist').value='';
+  document.querySelector('#recommendedSong').value='';document.querySelector('#recommendedArtist').value='';document.querySelector('#recommendedLanguage').value='';
  }catch(err){box.textContent=err.message;box.className='status err'}
  finally{button.disabled=false;button.textContent='💡 Enviar recomendación'}
 }
