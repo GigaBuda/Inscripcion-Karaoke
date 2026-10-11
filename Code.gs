@@ -180,16 +180,19 @@ function submitRecommendation(payload) {
   const artist = String(payload && payload.artist || '').trim();
   const singerName = String(payload && payload.singerName || '').trim();
   const language = String(payload && payload.language || '').trim();
+  const songLanguage = String(payload && payload.songLanguage || '').trim();
   if (!song) throw new Error('Escribe el título de la canción que recomiendas.');
+  if (!songLanguage) throw new Error('Elige el idioma de la canción.');
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheetName = 'Canciones Recomendadas';
   let sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
-    sheet.appendRow(['Fecha y hora', 'Canción recomendada', 'Artista', 'Idioma elegido', 'Recomendado por']);
+    sheet.appendRow(['Fecha y hora', 'Canción recomendada', 'Artista', 'Idioma elegido', 'Recomendado por', 'Idioma de la canción']);
     sheet.setFrozenRows(1);
     sheet.getRange('A:A').setNumberFormat('dd/MM/yyyy HH:mm:ss');
   }
-  sheet.appendRow([new Date(), song, artist, language, singerName]);
+  if (sheet.getLastColumn() < 6) sheet.getRange(1, 6).setValue('Idioma de la canción');
+  sheet.appendRow([new Date(), song, artist, language, singerName, songLanguage]);
   return {ok: true, message: '¡Gracias! Tu recomendación se ha enviado.'};
 }
