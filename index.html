@@ -14,7 +14,19 @@ form{padding:23px 25px 27px}.field{margin:0 0 19px}label{display:flex;align-item
 <div class="field"><label for="artist"><span class="num">2</span> Cantante o autor <span class="req">*</span></label><select id="artist" required disabled><option>Primero elige un idioma</option></select><p class="hint">Escoge un artista del catálogo.</p></div>
 <div class="field"><label for="song"><span class="num">3</span> Canción <span class="req">*</span></label><select id="song" required disabled><option>Primero elige un cantante</option></select><p class="hint">Solo aparecerán las canciones de ese artista.</p></div>
 <div class="field"><label for="singerName"><span class="num">4</span> Nombre de quien va a cantar <span class="req">*</span></label><input id="singerName" maxlength="120" required autocomplete="name" placeholder="Escribe tu nombre"></div>
-<button id="submitButton" type="submit">🎶 CONFIRMAR INSCRIPCIÓN</button><div id="status" class="status" role="status" aria-live="polite"></div></form></section><div class="footer">Luces · Música · ¡A cantar!</div></main>
+<button id="submitButton" type="submit">🎶 CONFIRMAR INSCRIPCIÓN</button><div id="status" class="status" role="status" aria-live="polite"></div></form>
+<section class="card" style="margin-top:18px">
+  <header class="hero" style="padding:20px 22px 12px;border-bottom:0">
+    <h2 style="margin:0;font-size:22px">🎵 Canción recomendada</h2>
+    <p class="intro">¿Qué canción recomiendas que no esté en la lista? ¡Ayúdanos a ampliar el karaoke!</p>
+  </header>
+  <div style="padding:0 25px 24px">
+    <div class="field"><label for="recommendedSong">Canción que recomiendas <span class="req">*</span></label><input id="recommendedSong" maxlength="180" placeholder="Título de la canción"></div>
+    <div class="field"><label for="recommendedArtist">Artista (opcional)</label><input id="recommendedArtist" maxlength="180" placeholder="Nombre del artista"></div>
+    <button id="recommendButton" type="button">💡 Enviar recomendación</button>
+    <div id="recommendStatus" class="status" role="status" aria-live="polite"></div>
+  </div>
+</section></section><div class="footer">Luces · Música · ¡A cantar!</div></main>
 <script>
 const languageNames={english:'Inglés',infantil:'Infantil',espanol:'Español',italiano:'Italiano',catala:'Catalán',francais:'Francés',nederlands:'Neerlandés'};
 const languagePreference={en:'english',es:'espanol',ca:'catala',fr:'francais',it:'italiano',nl:'nederlands'};
@@ -27,5 +39,19 @@ async function loadCatalog(){try{const data=await api('/api/catalog');catalog=da
 lang.addEventListener('change',()=>{const d=catalog[lang.value];fill(artist,d?'Elige un cantante':'Primero elige un idioma',d?d.artists:[]);fill(song,'Primero elige un cantante',[]);statusBox.className='status'});
 artist.addEventListener('change',()=>{const d=catalog[lang.value],songs=d&&d.songsByArtist&&d.songsByArtist[artist.value]?d.songsByArtist[artist.value]:[];fill(song,songs.length?'Elige una canción':'No hay canciones para este cantante',songs);statusBox.className='status'});
 form.addEventListener('submit',async e=>{e.preventDefault();if(!form.reportValidity())return;btn.disabled=true;btn.textContent='ENVIANDO…';try{const result=await api('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({language:lang.value,artist:artist.value,song:song.value,singerName:document.querySelector('#singerName').value.trim()})});showStatus(result.message||'¡Inscripción registrada correctamente!','ok');form.reset();fill(artist,'Primero elige un idioma',[]);fill(song,'Primero elige un cantante',[])}catch(err){showStatus(err.message,'err')}finally{btn.disabled=false;btn.textContent='🎶 CONFIRMAR INSCRIPCIÓN'}});
+async function sendRecommendation(){
+ const title=document.querySelector('#recommendedSong').value.trim();
+ const recArtist=document.querySelector('#recommendedArtist').value.trim();
+ const box=document.querySelector('#recommendStatus'), button=document.querySelector('#recommendButton');
+ if(!title){box.textContent='Escribe el título de la canción que recomiendas.';box.className='status err';return}
+ button.disabled=true;button.textContent='ENVIANDO…';
+ try{
+  const result=await api('/api/recommendation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({song:title,artist:recArtist,singerName:document.querySelector('#singerName').value.trim(),language:lang.value||''})});
+  box.textContent=result.message||'¡Gracias! Tu recomendación se ha enviado.';box.className='status ok';
+  document.querySelector('#recommendedSong').value='';document.querySelector('#recommendedArtist').value='';
+ }catch(err){box.textContent=err.message;box.className='status err'}
+ finally{button.disabled=false;button.textContent='💡 Enviar recomendación'}
+}
+document.querySelector('#recommendButton').addEventListener('click',sendRecommendation);
 loadCatalog();
 </script></body></html>
